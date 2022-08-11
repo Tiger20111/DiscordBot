@@ -1,32 +1,45 @@
 package naraka.events.guide;
 
+import naraka.settings.Settings;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.TextChannel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PublishGuideAdapter {
-  public void publish(MessageChannelUnion messageChannelUnion) {
-    delete(messageChannelUnion);
-    push(messageChannelUnion);
+  @Autowired
+  private Settings settings;
+
+  public void publish(TextChannel textChannel) {
+    delete(textChannel);
+    push(textChannel);
   }
 
-  private void delete(MessageChannelUnion messageChannelUnion) {
-    var messageHistory = MessageHistory.getHistoryFromBeginning(messageChannelUnion).complete();
+  private void delete(TextChannel textChannel) {
+    List<Message> deleteMessages = new ArrayList<>();
+    var messageHistory = MessageHistory.getHistoryFromBeginning(textChannel).complete();
     for (Message message : messageHistory.getRetrievedHistory()) {
-      if (message.getAuthor().isBot() || message.getAuthor().getId().equals("329619790413037569")) {
+      if (settings.isAllowDeleteMessage(message)) {
         message.delete().queue();
+        deleteMessages.add(message);
       }
     }
+    if (deleteMessages.isEmpty()) {
+      return;
+    }
+    textChannel.deleteMessages(deleteMessages).queue();
   }
 
-  private void push(MessageChannelUnion messageChannelUnion) {
+  private void push(TextChannel textChannel) {
     File[] folders = null;
     try {
       folders =  (new File(getClass().getClassLoader().getResource("data").toURI())).listFiles();
@@ -36,17 +49,17 @@ public class PublishGuideAdapter {
     if (folders == null) return;
     for (File folder : folders) {
       try {
-        listFilesForFolder(folder, messageChannelUnion);
+        listFilesForFolder(folder, textChannel);
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
   }
 
-  public void listFilesForFolder(final File folder, MessageChannelUnion messageChannelUnion) throws IOException {
+  public void listFilesForFolder(final File folder, TextChannel textChannel) throws IOException {
     for (final File fileEntry : folder.listFiles()) {
       if (fileEntry.isDirectory()) {
-        listFilesForFolder(fileEntry, messageChannelUnion);
+        listFilesForFolder(fileEntry, textChannel);
       } else {
 
         var typeFile = fileEntry.getName();
@@ -56,11 +69,11 @@ public class PublishGuideAdapter {
         if (typeFile.equals("md")) {
           var message = Files.readString(fileEntry.toPath());
           if (!message.isEmpty()) {
-            messageChannelUnion.sendMessage(message).queue();
+            textChannel.sendMessage(message).queue();
           }
         }
         if (typeFile.equals("mp4")) {
-          messageChannelUnion.sendFile(fileEntry).queue();
+          textChannel.sendFile(fileEntry).queue();
         }
       }
     }
