@@ -26,9 +26,9 @@ public class GuideHandler implements EventHandler {
 
   @Override
   public void handleEvent(TypeEvent typeEvent, MessageReceivedEvent event) {
-//    if (typeEvent != GUIDE) {
-//      return;
-//    }
+    if (typeEvent != GUIDE) {
+      return;
+    }
     switch (requireNonNull(getCommand(event))) {
       case PUBLISH -> publishGuideAdapter.publish(event.getGuild().getTextChannelById(settings.getGuideChannelId()));
     }

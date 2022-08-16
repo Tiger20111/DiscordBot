@@ -1,5 +1,6 @@
 package naraka.channel;
 
 public enum ChannelType {
-  GUIDE_CHANNEL
+  GUIDE_CHANNEL,
+  COMMAND
 }
