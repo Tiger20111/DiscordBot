@@ -1,7 +1,9 @@
 package naraka.settings;
 
 import naraka.channel.ChannelType;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
@@ -33,6 +35,12 @@ public class Settings {
 
   public String getGuildId() {
     return guildId;
+  }
+
+  public TextChannel getGuideChannel(JDA jda) {
+    var guild = jda.getGuildById(this.guildId);
+    var channelId = getGuideChannelId();
+    return guild.getTextChannelById(channelId);
   }
 
   public String getGuideChannelId() {

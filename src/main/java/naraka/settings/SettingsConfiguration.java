@@ -20,21 +20,21 @@ public class SettingsConfiguration {
   private final String guildId = "412963092214054912";
   private final String guildTestId = "1002844797112958976";
   private final String commandTestChannelId = "1008725045624975360";
-  private final String commandChannelId = "1002112703583756318";
-
-  @Bean
-  public Settings getTestSettings() {
-    HashMap<ChannelType, String> channels = new HashMap<>();
-    channels.put(GUIDE_CHANNEL, guideTestChannelId);
-    channels.put(COMMAND, commandChannelId);
-    return new Settings(token, channels, boss, guildTestId);
-  }
+  private final String commandChannelId = "1008725045624975360";
 
 //  @Bean
-//  public Settings getSettings() {
+//  public Settings getTestSettings() {
 //    HashMap<ChannelType, String> channels = new HashMap<>();
-//    channels.put(GUIDE_CHANNEL, guideChannelId);
-//    channels.put(COMMAND, commandChannelId);
-//    return new Settings(token, channels, boss, guildId);
+//    channels.put(GUIDE_CHANNEL, guideTestChannelId);
+//    channels.put(COMMAND, commandTestChannelId);
+//    return new Settings(token, channels, boss, guildTestId);
 //  }
+
+  @Bean
+  public Settings getSettings() {
+    HashMap<ChannelType, String> channels = new HashMap<>();
+    channels.put(GUIDE_CHANNEL, guideChannelId);
+    channels.put(COMMAND, commandChannelId);
+    return new Settings(token, channels, boss, guildId);
+  }
 }

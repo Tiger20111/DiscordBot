@@ -30,7 +30,7 @@ public class GuideHandler implements EventHandler {
       return;
     }
     switch (requireNonNull(getCommand(event))) {
-      case PUBLISH -> publishGuideAdapter.publish(event.getGuild().getTextChannelById(settings.getGuideChannelId()));
+      case PUBLISH -> publishGuideAdapter.publish(settings.getGuideChannel(event.getJDA()));
     }
   }
 

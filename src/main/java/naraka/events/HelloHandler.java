@@ -15,6 +15,10 @@ public class HelloHandler implements EventHandler {
   @Override
   public void handleEvent(TypeEvent typeEvent, MessageReceivedEvent event) {
     if (typeEvent != HELLO) return;
+    hello(typeEvent, event);
+  }
+
+  private void hello(TypeEvent typeEvent, MessageReceivedEvent event) {
     var author = event.getAuthor();
 
     var channel = event.getMessage().getChannel();

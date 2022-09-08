@@ -29,6 +29,6 @@ public class Item {
   }
 
   public static boolean isItem(Message message) {
-    return  (message.getContentRaw().toLowerCase().contains("item:"));
+    return  (message.getContentRaw().toLowerCase().contains("type"));
   }
 }

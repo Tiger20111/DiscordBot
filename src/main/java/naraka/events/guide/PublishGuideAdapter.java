@@ -13,8 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 import static java.util.List.of;
 import static naraka.events.guide.Item.isItem;
@@ -27,18 +29,21 @@ public class PublishGuideAdapter {
   private Settings settings;
 
   public void publish(TextChannel textChannel) {
-    delete(textChannel);
-    addGuides(textChannel);
-    addTableOfContents(textChannel);
+    //deleteGroup(textChannel);
+    //addGuides(textChannel);
+    //addTableOfContents(textChannel);
   }
 
-  private void delete(TextChannel textChannel) {
+  private void deleteGroup(TextChannel textChannel) {
+    List<Message> deleteMessages = new ArrayList<>();
     var messageHistory = MessageHistory.getHistoryFromBeginning(textChannel).complete();
     for (Message message : messageHistory.getRetrievedHistory()) {
       if (settings.isAllowDeleteMessage(message)) {
-        message.delete().queue();
+        deleteMessages.add(message);
+        //message.delete().queue();
       }
     }
+    textChannel.deleteMessages(deleteMessages).queue();
   }
 
   private void addGuides(TextChannel textChannel) {
@@ -72,7 +77,7 @@ public class PublishGuideAdapter {
         var typeFileIndex = typeFile.lastIndexOf('.');
         typeFile = typeFile.substring(typeFileIndex + 1);
 
-        if (typeFile.equals("md") || typeFile.equals("yaml")) {
+        if (typeFile.equals("md") || typeFile.equals("json")) {
           var message = Files.readString(fileEntry.toPath());
           if (!message.isEmpty()) {
             textChannel.sendMessage(message).queue();
@@ -88,24 +93,25 @@ public class PublishGuideAdapter {
   private void addTableOfContents(TextChannel textChannel) {
     var messageHistory = MessageHistory.getHistoryFromBeginning(textChannel).complete();
 
-    var items = messageHistory.getRetrievedHistory()
-            .stream()
+    var history = new MessageHistory(textChannel);
+    var lastMessages = history.retrievePast(100).complete();
+
+    var allMessages = messageHistory.getRetrievedHistory();
+    List<Message> messages = new ArrayList<>();
+    messages.addAll(lastMessages);
+    messages.addAll(allMessages);
+    var items = messages.stream()
             .filter(Item::isItem)
-            .map(this::doOnMessage);
+            .map(this::doOnMessage)
+            .collect(Collectors.toList());
 
     var tableContents = new TableContents(items);
     tableContents.sendChannel(textChannel);
   }
 
-  private Item generateItem(String body, String messageId) {
-    var item = new Item("", HERO);
-    item.setLink(generateMessageLink(messageId));
-    item.modifyName();
-    return item;
-  }
-
   private Item doOnMessage(Message message) {
-    var item = generateItem(message.getContentRaw(), message.getId());
+    var item = new Gson().fromJson(message.getContentRaw(), Item.class);
+    item.setLink(generateMessageLink(message.getId()));
     changeMessage(message, item);
     return item;
   }
@@ -117,7 +123,7 @@ public class PublishGuideAdapter {
   }
 
   private String generateMessageLink(String messageId) {
-    return "https://discord/" +
+    return "https://discord.com/channels/" +
             settings.getGuildId() + "/" +
             settings.getGuideChannelId() + "/" +
             messageId;

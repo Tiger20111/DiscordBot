@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
@@ -16,15 +17,27 @@ import static naraka.events.guide.ItemTypeUtils.getModifiedViewType;
 public class TableContents {
   private HashMap<ItemType, List<Item>> mapItems;
 
-  TableContents(Stream<Item> items) {
+  TableContents(List<Item> items) {
     mapItems = new HashMap<>();
-    for (ItemType itemType : ItemType.values()) {
-      mapItems.put(itemType, of());
+    if (items.isEmpty()) {
+      return;
     }
-    items.forEach(v -> mapItems.get(v.getType()).add(v));
+    for (ItemType itemType : ItemType.values()) {
+      mapItems.put(itemType, new ArrayList<>());
+    }
+    if (mapItems.isEmpty()) {
+      return;
+    }
+    //items.forEach(v -> mapItems.get(v.getType()).add(v));
+
+    for (Item item : items) {
+      var hm = mapItems.get(item.getType());
+      hm.add(item);
+    }
   }
 
   public void sendChannel(TextChannel textChannel) {
+    if (mapItems.isEmpty()) return;
     mapItems.forEach((k, v) -> sendLinkItem(k, v, textChannel));
   }
 
