@@ -5,5 +5,7 @@ public enum TypeEvent {
   HELP,
   HELLO,
   DIALOG,
+  BAN,
+  MESSAGE,
   NONE
 }

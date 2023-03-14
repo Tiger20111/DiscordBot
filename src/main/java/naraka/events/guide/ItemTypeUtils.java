@@ -15,19 +15,19 @@ public class ItemTypeUtils {
   private static String getColor(ItemType itemType) {
     switch (itemType) {
       case HERO -> {
-        return "fix";
+        return "Fix";
       }
       case MELEE -> {
-        return "xl";
+        return "Xl";
       }
       case DISTANT -> {
-        return "md";
+        return "Md";
       }
       case NEFRIT -> {
-        return "css";
+        return "Css";
       }
       default -> {
-        return "ini";
+        return "Ini";
       }
     }
   }

@@ -31,7 +31,7 @@ public class PublishGuideAdapter {
   public void publish(TextChannel textChannel) {
     //deleteGroup(textChannel);
     //addGuides(textChannel);
-    //addTableOfContents(textChannel);
+    addTableOfContents(textChannel);
   }
 
   private void deleteGroup(TextChannel textChannel) {
@@ -83,7 +83,7 @@ public class PublishGuideAdapter {
             textChannel.sendMessage(message).queue();
           }
         }
-        if (typeFile.equals("mp4")) {
+        if (typeFile.equals("mp4") || typeFile.equals("png")) {
           textChannel.sendFile(fileEntry).queue();
         }
       }

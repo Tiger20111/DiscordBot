@@ -28,11 +28,21 @@ public class MessageHandler {
 
   private TypeEvent defineTypeCommand(Message message) {
     var contentMessage = message.getContentRaw().toLowerCase();
+    //contentMessage = "tig.message";
     if (contentMessage.contains("tig.hello")) {
       return HELLO;
     }
     if (contentMessage.contains("tig.guide")) {
       return GUIDE;
+    }
+    if (contentMessage.contains("tig.message")) {
+      return MESSAGE;
+    }
+    if (contentMessage.contains("tig.ban")) {
+      return BAN;
+    }
+    if (contentMessage.contains("tig.dialog")) {
+      return DIALOG;
     }
     return NONE;
   }
